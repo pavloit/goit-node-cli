@@ -14,45 +14,52 @@ function writeContacts(contacts) {
 }
 
 async function listContacts() {
-    const contacts = await readContacts();
-    return contacts;
+    try {
+        const contacts = await readContacts();
+        return contacts;
+    } catch (error) {
+        console.error("Error reading contacts:", error)
+    }
 }
 
 async function getContactById(contactId) {
-    const contacts = await readContacts();
-
-    const contact = contacts.find(contact => contact.id === contactId);
-
-    return contact;
+    try {
+        const contacts = await readContacts();
+        const contact = contacts.find(contact => contact.id === contactId);
+        return contact;      
+    } catch (error) {
+        console.error("Error getting contact by ID:", error)
+    }
 }
 
 async function removeContact(contactId) {
-    const contacts = await readContacts();
-    const index = contacts.findIndex((contact) => contact.id === contactId);
-    if (index === -1) {
-        return null;
+    try {
+        const contacts = await readContacts();
+        const index = contacts.findIndex((contact) => contact.id === contactId);
+        if (index === -1) {
+            return null;
+        }
+        const deletedContact = contacts.splice(index, 1);
+        await writeContacts(contacts);
+        return deletedContact;
+
+    } catch (error) {
+        console.error("Error removing contact:", error)
     }
-
-    const deletedContact = contacts[index];
-
-    contacts.splice(index, 1);
-
-    await writeContacts(contacts);
-
-    return deletedContact;
 }
 
 async function addContact(name, email, phone) {
-    const contacts = await readContacts();
-    const newcontact = { id: crypto.randomUUID(), name, email, phone };
-
-    contacts.push(newcontact);
-
-    await writeContacts(contacts);
-
-    return newcontact;
+    try {
+        const contacts = await readContacts();
+        const newcontact = { id: crypto.randomUUID(), name, email, phone };
+        contacts.push(newcontact);
+        await writeContacts(contacts);
+        return newcontact;
+    
+    } catch (error) {
+        console.error("Error adding new contact:", error)    
+    }
 }
-
 
 module.exports = {
     listContacts,
